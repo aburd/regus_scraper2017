@@ -20,5 +20,9 @@
   "bugs": {
     "url": "https://github.com/aburd/price_scraper/issues"
   },
-  "homepage": "https://github.com/josephdburdick/price_scraper#readme"
+  "homepage": "https://github.com/josephdburdick/price_scraper#readme",
+  "dependencies": {
+    "cheerio": "^0.19.0",
+    "request": "^2.61.0"
+  }
 }

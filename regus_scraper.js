@@ -1,7 +1,11 @@
+'use strict';
+
 // declare necessary global variables
 var request = require('request'),
 	cheerio = require ('cheerio'),
-	prices = [],
+	forEachAsync = require('foreachasync').forEachAsync;
+
+var	prices = [],
 	links = [],
 	floorNames = [];
 
@@ -18,7 +22,7 @@ var request = require('request'),
 
 				// load links into an array
 				$('.more-info-link', 'div.results_cols').each( function(i, a){
-					var link = $(this).attr('href');
+					var link = 'http://www.regus.co.jp' + $(this).attr('href');
 					links.push(link);
 				});
 
@@ -28,9 +32,8 @@ var request = require('request'),
 					floorNames.push(floorName);
 				});
 
-				// print that data
-				console.log(links.length);
-				console.log(floorNames.length);
+				// print the number of locations
+				console.log('There are ' + links.length + ' Regus locations in Tokyo.');
 
 			} else {
 				console.log('There was an error retrieving the data.');
@@ -42,78 +45,32 @@ var request = require('request'),
 		
 	}
 
-	function makeTokyoLinks(tokyoLinks, callback){
-
-		var b;
-
-		for(b=0;b<tokyoLinks.length;b++){
-			
-			tokyoLinks[b] = 'http://www.regus.co.jp' + tokyoLinks[b];
-			
-		}
-
-		callback && callback();
-	}
-
-	function getTokyoPrice(tokyoLinks, tokyoPrices, callback){
+	function getTokyoPrice(url, index, callback){
 		
 		var priceHolder = [];
-		var nameHolder = "";
 
-		request(tokyoLinks, function(error, response, body){
+		request(url, function(error, response, body){
 			if(!error && response.statusCode == 200){
 				var $ = cheerio.load(body);
 
-				nameHolder = $('h1', '#ctl00_TopHeader_BocSearchTitle_pnlSubTitle').text();
-
 				$('span.cost', 'div#services').each(function(i, span){
-
 					priceHolder[i] = $(this).text();
-					console.log(nameHolder);
-					console.log(priceHolder.join());
-					// tokyoPrices = priceHolder.join(' || ');
-
+//					console.log(priceHolder.join(','));
 				});
 				
 			} else {
 				console.log("There was an error retrieving the information.");
 			}
-
+			console.log(index + '. ' + floorNames[index]);
+			console.log( 'Business lounge: ' + priceHolder.join(' || Virtual Office: ')  );
 		});
-
-
+		
 		callback && callback();	
 	}
 
 
-	function printData(tokyoLinks) {
-		var i;
-		for(i=0; i<tokyoLinks.length; i++){
-			console.log(floorNames[i]);
-			console.log(links[i]);
-			console.log(prices[i]);
-		}
-	}
-
-	function printer(floor, price, callback){
-		console.log(floor);
-		console.log(price);
-	}
-
 	getTokyoLinks( function(){
-		makeTokyoLinks(links, function(){
-
-			var i;
-			for(i=0; i<links.length; i++){
-
-				getTokyoPrice(links[i], prices[i], function(){
-
-					//printer(floorNames[i], prices[i]);
-
-				});
-
-			}
-
-
+		links.forEach( function(link, i){
+			getTokyoPrice(link, i);
 		});
 	});

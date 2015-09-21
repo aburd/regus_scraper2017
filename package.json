@@ -1,0 +1,30 @@
+{
+  "name": "price_scraper",
+  "version": "1.0.0",
+  "description": "Node-powered price scraper",
+  "main": "regus_scraper.js",
+  "scripts": {
+    "start": "node regus_scraper.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/josephdburdick/price_scraper.git"
+  },
+  "keywords": [
+    "Node",
+    "js",
+    "scraper"
+  ],
+  "author": "Aaron Burdick",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aburd/price_scraper/issues"
+  },
+  "homepage": "https://github.com/josephdburdick/price_scraper#readme",
+  "dependencies": {
+    "cheerio": "^0.19.0",
+    "forEachAsync": "^3.0.0",
+    "request": "^2.61.0"
+  }
+}

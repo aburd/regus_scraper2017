@@ -11,9 +11,12 @@ var	prices = [],
 
 	// this function scrapes the regus tokyo website for names and link information
 	function getTokyoLinks(callback){
-
+		// EN of JP links
+		var linkEn = 'http://www.en.regus.co.jp/office-space/japan/tokyo';
+		var linkJp = 'http://www.regus.co.jp/office-space/%E6%97%A5%E6%9C%AC/%E6%9D%B1%E4%BA%AC';
+		
 		// retrieve the body HTML document
-		request('http://www.regus.co.jp/office-space/%E6%97%A5%E6%9C%AC/%E6%9D%B1%E4%BA%AC', function(error, response, body){
+		request(linkEn, function(error, response, body){
 		
 			// if everything is ok then proceed
 			if(!error && response.statusCode == 200){
@@ -61,7 +64,7 @@ var	prices = [],
 			} else {
 				console.log("There was an error retrieving the information.");
 			}
-			var currentFloor = floorNames[index].replace(/\s/g, '');
+			var currentFloor = floorNames[index].replace(/\s{2,}/g, '');
 			console.log((index+1) + '. ' + currentFloor + '\n' +
 					url + '\n' +
 					'Business lounge: ' + priceHolder.join(' || Virtual Office:') + '\n' +

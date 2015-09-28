@@ -62,9 +62,10 @@ var	prices = [],
 				console.log("There was an error retrieving the information.");
 			}
 			var currentFloor = floorNames[index].replace(/\s/g, '');
-			console.log((index+1) + '. ' + currentFloor);
-			console.log( 'Business lounge: ' + priceHolder.join(' || Virtual Office:') );
-			console.log('\n ');
+			console.log((index+1) + '. ' + currentFloor + '\n' +
+					url + '\n' +
+					'Business lounge: ' + priceHolder.join(' || Virtual Office:') + '\n' +
+					'\n ');
 		});
 		
 		callback && callback();	

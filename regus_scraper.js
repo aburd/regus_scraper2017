@@ -1,22 +1,21 @@
 'use strict';
 
-// declare necessary global variables
 var request = require('request'),
-	cheerio = require ('cheerio'),
-	forEachAsync = require('foreachasync').forEachAsync;
+	cheerio = require ('cheerio');
 
 var	prices = [],
 	links = [],
 	floorNames = [];
 
+var cities = ['Tokyo', 'Yokohama', 'Chiba', 'Ibaraki', 'Fukuoka', 'Hiroshima', 'Osaka', 'Nagoya', 'Sendai', 'Okayama', 'Kobe', 'Kagawa', 'Kyoto', 'Sapparo', 'Aomori', 'Kagoshima', 'Okinawa'];
+
 	// this function scrapes the regus tokyo website for names and link information
-	function getTokyoLinks(callback){
+	function getTokyoLinks(city, callback){
 		// EN of JP links
-		var linkEn = 'http://www.en.regus.co.jp/office-space/japan/tokyo';
-		var linkJp = 'http://www.regus.co.jp/office-space/%E6%97%A5%E6%9C%AC/%E6%9D%B1%E4%BA%AC';
+		var linkEn = 'http://www.en.regus.co.jp/office-space/japan/';
 		
 		// retrieve the body HTML document
-		request(linkEn, function(error, response, body){
+		request(linkEn + city, function(error, response, body){
 		
 			// if everything is ok then proceed
 			if(!error && response.statusCode == 200){
@@ -36,7 +35,7 @@ var	prices = [],
 				});
 
 				// print the number of locations
-				console.log('There are ' + links.length + ' Regus locations in Tokyo.');
+				console.log('There are ' + links.length + ' Regus locations in '+ city +'.');
 
 			} else {
 				console.log('There was an error retrieving the data.');
@@ -56,9 +55,8 @@ var	prices = [],
 			if(!error && response.statusCode == 200){
 				var $ = cheerio.load(body);
 
-				$('span.cost', 'div#services').each(function(i, span){
+				$('span.cost', 'p.pricing').each(function(i, span){
 					priceHolder[i] = $(this).text();
-//					console.log(priceHolder.join(','));
 				});
 				
 			} else {
@@ -67,16 +65,32 @@ var	prices = [],
 			var currentFloor = floorNames[index].replace(/\s{2,}/g, '');
 			console.log((index+1) + '. ' + currentFloor + '\n' +
 					url + '\n' +
-					'Business lounge: ' + priceHolder.join(' || Virtual Office:') + '\n' +
-					'\n ');
+					'Business lounge: ' + priceHolder.join(' || Virtual Office:') + '\n');
 		});
 		
 		callback && callback();	
 	}
 
+// Run the thang 
 
-	getTokyoLinks( function(){
-		links.forEach( function(link, i){
-			getTokyoPrice(link, i);
-		});
-	});
+process.stdin.setEncoding('utf8');
+
+process.stdin.on('readable', function() {
+  var cityChunk = process.stdin.read();
+  var cityChunk = Number(cityChunk);
+  console.log(typeof cityChunk);
+
+  if (cityChunk !== null) {
+    getTokyoLinks(cities[cityChunk], function(){
+      links.forEach( function(link, i){
+        getTokyoPrice(link, i);
+        process.stdin.exit();
+      });
+    });
+  }
+});
+
+process.stdin.on('end', function() {
+  process.stdout.write('end');
+});
+

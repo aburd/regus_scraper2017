@@ -4,7 +4,7 @@
   "description": "Node-powered price scraper",
   "main": "regus_scraper.js",
   "scripts": {
-    "start": "node regus_scraper.js",
+    "start": "node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

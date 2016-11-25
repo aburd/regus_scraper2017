@@ -11,22 +11,23 @@ var prices      = [],
     floorNames  = [],
     locCounter  = 0;
 
-// Date stuff
+// DATE STUFF
 var theDate       = new Date(),
     currentYear   = theDate.getFullYear().toString(),
     currentMonth  = (theDate.getMonth() + 1).toString(),
     dateString    = theDate.toDateString().replace(/\s/g, '-')
-// EN of JP links
+// EN / JP LINKS
 var linkEn = 'http://www.en.regus.co.jp/virtual-office/japan/';
-// Directory to put new files
+// DIRECTORY FOR NEW FILES
 var pathToCurrentMonthFolder = path.join(__dirname, 'price-keeping', currentYear, currentMonth);
 // MAKE FILE AND CREATE COLUMNS
 var writable = fs.createWriteStream(path.join(pathToCurrentMonthFolder, 'res-'+dateString+'.csv'));
 var regusPricesWriteStream = fs.createWriteStream(path.join(pathToCurrentMonthFolder, 'res-'+dateString+'.json') );
 writable.write(`Location Name;URL;Mailbox Plus;Telephone Answering;Virtual Office;Virtual Office Plus\n`)
 
+// OBJECT TO KEEP ALL DATA IN
 var regusLocations = {};
-
+// CLASS FOR LOCATION
 function Location() {
   this.name = '';
   this.url = '';
@@ -40,7 +41,11 @@ var mail = [],
 
 var cities = ['Tokyo', 'Yokohama', 'Chiba', 'Ibaraki', 'Fukuoka', 'Hiroshima', 'Osaka', 'Nagoya', 'Sendai', 'Okayama', 'Kobe', 'Kagawa', 'Kyoto', 'Sapparo', 'Aomori', 'Kagoshima', 'Okinawa'];
 
-// this function scrapes the regus tokyo website for names and link information
+/*********
+//********
+// THE SCRAPER FUNCTION WHICH GOES TO REGUS WEBSITE
+//********
+*********/
 function getCityLinks(city) {
   return new Promise((resolve, reject) => {
     var cityLocations = [];
@@ -83,10 +88,17 @@ function getCityLinks(city) {
   })
 }
 
-var cityPromises = [];
 
-// Push all promises to an array for iteration
+
+
+/*********
+//********
+// GET ALL LINKS AND THEN LOG ALL THE NECESSARY DATA TO FILES
+//********
+*********/
 console.info('Gathering links for analysis...');
+// Push all promises to an array for iteration
+var cityPromises = [];
 cities.forEach((city) => {
   cityPromises.push(getCityLinks(city));
 });
@@ -111,6 +123,12 @@ Promise.mapSeries(cityPromises, function(cityArray, i){
 
 })
 
+
+/*********
+//********
+// WRITE TO FILE LOGIC
+//********
+*********/
 function writeLocationsToFile(cityArr){
   // ORGANIZE LOCATIONS INSIDE OF CITIES
   function compare(a, b) {

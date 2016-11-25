@@ -1,0 +1,2 @@
+1. Fix the JSON writing. Or just put all the data in an object and JSON stringify.
+2. Add html report generation to main.js as a module.

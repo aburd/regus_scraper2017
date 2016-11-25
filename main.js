@@ -62,7 +62,7 @@ function getCityLinks(city) {
           var loc = new Location();
 
           // GENERAL LOCATION INFORMATION
-          loc.url = 'http://www.regus.co.jp' + $(a).find('.more-info-link').attr('href');
+          loc.url = 'http://www.en.regus.co.jp' + $(a).find('.more-info-link').attr('href');
           loc.name = $(a).find('.centre-name').text().replace(/\s{2,}/g, '').replace(',', '');
 
           // PUSH THE SPECIFIC PRODUCTS TO THE LOCATION INFORMATION

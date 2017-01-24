@@ -41,11 +41,10 @@ var mail = [],
 
 var cities = ['Tokyo', 'Yokohama', 'Chiba', 'Ibaraki', 'Fukuoka', 'Hiroshima', 'Osaka', 'Nagoya', 'Sendai', 'Okayama', 'Kobe', 'Kagawa', 'Kyoto', 'Sapparo', 'Aomori', 'Kagoshima', 'Okinawa'];
 
-/*********
+
 //********
 // THE SCRAPER FUNCTION WHICH GOES TO REGUS WEBSITE
-//********
-*********/
+//********/
 function getCityLinks(city) {
   return new Promise((resolve, reject) => {
     var cityLocations = [];
@@ -91,11 +90,9 @@ function getCityLinks(city) {
 
 
 
-/*********
 //********
 // GET ALL LINKS AND THEN LOG ALL THE NECESSARY DATA TO FILES
-//********
-*********/
+//********/
 console.info('Gathering links for analysis...');
 // Push all promises to an array for iteration
 var cityPromises = [];
@@ -108,7 +105,7 @@ Promise.mapSeries(cityPromises, function(cityArray, i){
   writeLocationsToFile(cityArray)
 
 })
-.then(() => { //Print results
+.then(() => { // Print results
 
   console.log(`All done with data for ${locCounter} locations logged.`);
 
@@ -166,5 +163,3 @@ function writeLocationsToFile(cityArr){
   });
 
 }
-
-

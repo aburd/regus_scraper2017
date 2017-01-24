@@ -1,5 +1,9 @@
 'use strict';
 
+/*
+ * Made because the main site now does not have any prices on it
+ */
+
 var Promise = require('bluebird'),
     request = Promise.promisifyAll(require('request')),
     cheerio = require('cheerio'),
@@ -16,8 +20,10 @@ var theDate       = new Date(),
     currentYear   = theDate.getFullYear().toString(),
     currentMonth  = (theDate.getMonth() + 1).toString(),
     dateString    = theDate.toDateString().replace(/\s/g, '-')
+
 // EN / JP LINKS
-var linkEn = 'http://www.en.regus.co.jp/virtual-office/japan/';
+var link = 'https://www.regus-office.jp/service/virtualoffice/virtualoffice/';
+
 // DIRECTORY FOR NEW FILES
 var pathToCurrentMonthFolder = path.join(__dirname, 'price-keeping', currentYear, currentMonth);
 // MAKE FILE AND CREATE COLUMNS

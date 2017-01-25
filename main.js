@@ -23,6 +23,15 @@ var theDate       = new Date(),
 
 // EN / JP LINKS
 var link = 'https://www.regus-office.jp/service/virtualoffice/virtualoffice/';
+var cityClass = '.roomList' // h2 is name of city
+// These are the selectors in the page for locations
+var locSelectors = {
+    main: '.listUnit',
+    name: 'h3',
+    address: 'p:first',
+    url: 'p a:nth(2)',
+    prices: 'table tr:nth(1)'
+},
 
 // DIRECTORY FOR NEW FILES
 var pathToCurrentMonthFolder = path.join(__dirname, 'price-keeping', currentYear, currentMonth);
@@ -45,7 +54,7 @@ var mail = [],
   virtual = [],
   virtualPlus = [];
 
-var cities = ['Tokyo', 'Yokohama', 'Chiba', 'Ibaraki', 'Fukuoka', 'Hiroshima', 'Osaka', 'Nagoya', 'Sendai', 'Okayama', 'Kobe', 'Kagawa', 'Kyoto', 'Sapparo', 'Aomori', 'Kagoshima', 'Okinawa'];
+//var cities = ['Tokyo', 'Yokohama', 'Chiba', 'Ibaraki', 'Fukuoka', 'Hiroshima', 'Osaka', 'Nagoya', 'Sendai', 'Okayama', 'Kobe', 'Kagawa', 'Kyoto', 'Sapparo', 'Aomori', 'Kagoshima', 'Okinawa'];
 
 
 //********

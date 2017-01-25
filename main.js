@@ -70,7 +70,7 @@ function getInformation() {
       if (!error && response.statusCode == 200) {
 
         var $ = cheerio.load(body);
-        var actual = $(locSelectors.main).length;
+        locCounter = $(locSelectors.main).length;
 
         // Go through each city
         $(citySelectors.main).each(function(i, city){
@@ -86,10 +86,11 @@ function getInformation() {
             loc.url = $(location).find(locSelectors.url).eq(2).attr('href');
             //prices
             //['Mailbox Plus', 'Telephone Answering', 'Virtual Office', 'Virtual Office Plus']
-            loc.prices['Mailbox Plus'] = $(location).find(locSelectors.prices).eq(1).find('td').eq(1).text();
-            loc.prices['Telephone Answering'] = $(location).find(locSelectors.prices).eq(1).find('td').eq(2).text();
-            loc.prices['Virtual Office'] = $(location).find(locSelectors.prices).eq(1).find('td').eq(3).text();
-            loc.prices['Virtual Office Plus'] = $(location).find(locSelectors.prices).eq(1).find('td').eq(4).text();
+            var $prices = $(location).find(locSelectors.prices).eq(1).find('td');
+            loc.prices['Mailbox Plus']        = $prices.eq(1).text();
+            loc.prices['Telephone Answering'] = $prices.eq(2).text();
+            loc.prices['Virtual Office']      = $prices.eq(3).text();
+            loc.prices['Virtual Office Plus'] = $prices.eq(4).text();
 
             locations.push(loc)
           });
@@ -110,60 +111,37 @@ function getInformation() {
   })
 }
 
-getInformation()
-  .then(function( cities ){
-    console.log(cities[0].locations[0])
-  })
-
-
-//********
-// GET ALL LINKS AND THEN LOG ALL THE NECESSARY DATA TO FILES
-//********/
-// console.info('Gathering links for analysis...');
-// // Push all promises to an array for iteration
-// var cityPromises = [];
-// cities.forEach((city) => {
-//   cityPromises.push(getCityLinks(city));
-// });
-// // Map all locations in order
-// Promise.mapSeries(cityPromises, function(cityArray, i){
-//   console.log('Starting ' + i)
-//   writeLocationsToFile(cityArray)
-// })
-// .then(() => { // Print results
-//
-//   console.log(`All done with data for ${locCounter} locations logged.`);
-//
-// })
-
 
 /*********
 //********
 // WRITE TO FILE LOGIC
 //********
 *********/
-// function writeLocationsToFile(cityArr){
-//   // ORGANIZE LOCATIONS INSIDE OF CITIES
-//   function compare(a, b) {
-//     if (a.name > b.name) {
-//       return 1;
-//     } else if (b.name > a.name) {
-//       return -1;
-//     } else {
-//       return 0;
-//     }
-//   }
-//   cityArr.sort(compare);
-//
-//   // WRITE RESULTS TO STREAM
-//   regusPricesWriteStream.write(JSON.stringify(cityArr))
-//   cityArr.forEach(function(locationObj) {
-//     locationObj.prices['Mailbox Plus'] = locationObj.prices['Mailbox Plus'] || 'n/a';
-//     locationObj.prices['Telephone Answering'] = locationObj.prices['Telephone Answering'] || 'n/a';
-//     locationObj.prices['Virtual Office'] = locationObj.prices['Virtual Office'] || 'n/a';
-//     locationObj.prices['Virtual Office Plus'] = locationObj.prices['Virtual Office Plus'] || 'n/a';
-//
-//     console.log(`Data written for ${locationObj.name}.`)
-//   });
-//
-// }
+function writeLocationsToFile(cities){
+  // ORGANIZE LOCATIONS INSIDE OF CITIES
+  function compare(a, b) {
+    if (a.name > b.name) {
+      return 1;
+    } else if (b.name > a.name) {
+      return -1;
+    } else {
+      return 0;
+    }
+  }
+  cities.sort(compare);
+
+  // WRITE RESULTS TO STREAM
+  regusPricesWriteStream.write(JSON.stringify(cities))
+}
+
+//********
+// GET ALL LINKS AND THEN LOG ALL THE NECESSARY DATA TO FILES
+//********/
+console.info('Gathering links for analysis...');
+getInformation()
+  .then(function( cities ){
+    // Write all information to a file
+    console.log('Writing locations to file...')
+    writeLocationsToFile(cities)
+    console.log(`All done with data for ${locCounter} locations logged.`);
+  });

@@ -38,7 +38,12 @@ function Location() {
   this.name = '';
   this.url = '';
   this.address = '';
-  this.prices = {};
+  this.prices = {
+    'Mailbox Plus': '',
+    'Telephone Answering': '',
+    'Virtual Office': '',
+    'Virtual Office Plus': ''
+  };
 }
 // SCRAPING SELECTORS
 var citySelectors = {
@@ -48,9 +53,9 @@ var citySelectors = {
 var locSelectors = {
   main: '.listUnit',
   name: 'h3',
-  address: 'p:first',
-  url: 'p a:nth(2)',
-  prices: 'table tr:nth(1)'
+  address: 'p',
+  url: 'p a',
+  prices: 'table tr'
 };
 
 
@@ -70,42 +75,32 @@ function getInformation() {
         // Go through each city
         $(citySelectors.main).each(function(i, city){
           // retrive name of city
-          var cityName = $(city).find(citySelectors.name).trim().text();
-          regusLocations.push({cityName: cityName, locations: []})
-
+          var cityName = $(city).find(citySelectors.name).text().trim();
+          var locations = [];
           // go through each Location
           $(city).find(locSelectors.main).each(function(i, location){
             var loc = new Location();
             // get location information
-            loc.name = $(location).find(locSelectors.name).trim().text();
-            loc.address = $(location).find(locSelectors.address).trim().text();
-            loc.url = $(location).find(locSelectors.url).trim().text();
-          })
+            loc.name = $(location).find(locSelectors.name).text().trim();
+            loc.address = $(location).find(locSelectors.address).first().text().trim();
+            loc.url = $(location).find(locSelectors.url).eq(2).attr('href');
+            //prices
+            //['Mailbox Plus', 'Telephone Answering', 'Virtual Office', 'Virtual Office Plus']
+            loc.prices['Mailbox Plus'] = $(location).find(locSelectors.prices).eq(1).find('td').eq(1).text();
+            loc.prices['Telephone Answering'] = $(location).find(locSelectors.prices).eq(1).find('td').eq(2).text();
+            loc.prices['Virtual Office'] = $(location).find(locSelectors.prices).eq(1).find('td').eq(3).text();
+            loc.prices['Virtual Office Plus'] = $(location).find(locSelectors.prices).eq(1).find('td').eq(4).text();
 
-        })
-
-
-
-        // load links into an array
-        $('.results_cols_wrapper').each(function(i, a) {
-          var loc = new Location();
-
-          // GENERAL LOCATION INFORMATION
-          loc.url = 'http://www.en.regus.co.jp' + $(a).find('.more-info-link').attr('href');
-          loc.name = $(a).find('.centre-name').text().replace(/\s{2,}/g, '').replace(',', '');
-
-          // PUSH THE SPECIFIC PRODUCTS TO THE LOCATION INFORMATION
-          $(this).find('.vo_products').each(function(i, product) {
-            var productName = $(product).find('p').text().trim();
-            var amount = $(product).find('h3').text().match(/¥.*/)[0];
-            loc.prices[productName] = amount;
+            locations.push(loc)
           });
-
-          cityLocations.push(loc);
-          locCounter += 1;
+          // push this location to the locations
+          regusLocations.push({
+            name: cityName,
+            locations: locations
+          });
         });
 
-        resolve(cityLocations);
+        resolve(regusLocations);
 
       } else {
         reject(error)
@@ -115,28 +110,31 @@ function getInformation() {
   })
 }
 
-
+getInformation()
+  .then(function( cities ){
+    console.log(cities[0].locations[0])
+  })
 
 
 //********
 // GET ALL LINKS AND THEN LOG ALL THE NECESSARY DATA TO FILES
 //********/
-console.info('Gathering links for analysis...');
-// Push all promises to an array for iteration
-var cityPromises = [];
-cities.forEach((city) => {
-  cityPromises.push(getCityLinks(city));
-});
-// Map all locations in order
-Promise.mapSeries(cityPromises, function(cityArray, i){
-  console.log('Starting ' + i)
-  writeLocationsToFile(cityArray)
-})
-.then(() => { // Print results
-
-  console.log(`All done with data for ${locCounter} locations logged.`);
-
-})
+// console.info('Gathering links for analysis...');
+// // Push all promises to an array for iteration
+// var cityPromises = [];
+// cities.forEach((city) => {
+//   cityPromises.push(getCityLinks(city));
+// });
+// // Map all locations in order
+// Promise.mapSeries(cityPromises, function(cityArray, i){
+//   console.log('Starting ' + i)
+//   writeLocationsToFile(cityArray)
+// })
+// .then(() => { // Print results
+//
+//   console.log(`All done with data for ${locCounter} locations logged.`);
+//
+// })
 
 
 /*********
@@ -144,28 +142,28 @@ Promise.mapSeries(cityPromises, function(cityArray, i){
 // WRITE TO FILE LOGIC
 //********
 *********/
-function writeLocationsToFile(cityArr){
-  // ORGANIZE LOCATIONS INSIDE OF CITIES
-  function compare(a, b) {
-    if (a.name > b.name) {
-      return 1;
-    } else if (b.name > a.name) {
-      return -1;
-    } else {
-      return 0;
-    }
-  }
-  cityArr.sort(compare);
-
-  // WRITE RESULTS TO STREAM
-  regusPricesWriteStream.write(JSON.stringify(cityArr))
-  cityArr.forEach(function(locationObj) {
-    locationObj.prices['Mailbox Plus'] = locationObj.prices['Mailbox Plus'] || 'n/a';
-    locationObj.prices['Telephone Answering'] = locationObj.prices['Telephone Answering'] || 'n/a';
-    locationObj.prices['Virtual Office'] = locationObj.prices['Virtual Office'] || 'n/a';
-    locationObj.prices['Virtual Office Plus'] = locationObj.prices['Virtual Office Plus'] || 'n/a';
-
-    console.log(`Data written for ${locationObj.name}.`)
-  });
-
-}
+// function writeLocationsToFile(cityArr){
+//   // ORGANIZE LOCATIONS INSIDE OF CITIES
+//   function compare(a, b) {
+//     if (a.name > b.name) {
+//       return 1;
+//     } else if (b.name > a.name) {
+//       return -1;
+//     } else {
+//       return 0;
+//     }
+//   }
+//   cityArr.sort(compare);
+//
+//   // WRITE RESULTS TO STREAM
+//   regusPricesWriteStream.write(JSON.stringify(cityArr))
+//   cityArr.forEach(function(locationObj) {
+//     locationObj.prices['Mailbox Plus'] = locationObj.prices['Mailbox Plus'] || 'n/a';
+//     locationObj.prices['Telephone Answering'] = locationObj.prices['Telephone Answering'] || 'n/a';
+//     locationObj.prices['Virtual Office'] = locationObj.prices['Virtual Office'] || 'n/a';
+//     locationObj.prices['Virtual Office Plus'] = locationObj.prices['Virtual Office Plus'] || 'n/a';
+//
+//     console.log(`Data written for ${locationObj.name}.`)
+//   });
+//
+// }

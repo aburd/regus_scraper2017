@@ -24,6 +24,7 @@
   "homepage": "https://github.com/aburd/regus_scraper.git",
   "dependencies": {
     "cheerio": "^0.19.0",
+    "csv-write-stream": "^2.0.0",
     "request": "2.61.0"
   },
   "devDependencies": {

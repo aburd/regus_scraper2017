@@ -26,6 +26,9 @@ var link = 'https://www.regus-office.jp/service/virtualoffice/virtualoffice/';
 
 // DIRECTORY FOR NEW FILES
 var pathToCurrentMonthFolder = path.join(__dirname, 'price-keeping', currentYear, currentMonth);
+if(!fs.exists(pathToCurrentMonthFolder)) {
+  fs.mkdirSync(pathToCurrentMonthFolder);
+}
 // MAKE FILE AND CREATE COLUMNS
 var writable = fs.createWriteStream(path.join(pathToCurrentMonthFolder, 'res-'+dateString+'.csv'));
 var regusPricesWriteStream = fs.createWriteStream(path.join(pathToCurrentMonthFolder, 'res-'+dateString+'.json') );

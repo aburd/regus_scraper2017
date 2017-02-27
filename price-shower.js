@@ -16,24 +16,21 @@ var $ = cheerio.load('<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"
 $('body').append('<h1>Prices for '+process.argv[2]+'</h1>')
 
 locs.forEach(function(city){
-  $('body').append(`
-      <h2>${city.name}</h2>
-      <ul></ul>
-    `)
+  $('body').append(`<div id="${city.name}">
+        <h2>${city.name}</h2>
+        <ul></ul>
+      </div>`)
   city.locations.forEach(function(location) {
-    $('ul').last().append(`
+    var prices = Object.keys(location.prices).map(function(priceType) {
+        return `${priceType}: ${ location.prices[priceType] }`
+      }).join('<br>');
+      console.log(prices)
+    $('#' + city.name + ' ul').append(`
         <li>
           <h3>${location.name}</h3> <br>
           <a href="${location.url}">Link</a> <br>
-          Prices: <ul>
-             ${Object.keys(location.prices).map(function(priceType){
-               return `<li>
-                  ${priceType}: ${location.prices[priceType]}
-                </li>`
-             }).join('')}
-          </ul>
-        </li>
-      `)
+          ${prices}
+        </li>`)
   })
 })
 
